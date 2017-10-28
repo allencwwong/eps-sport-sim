@@ -53,6 +53,7 @@ public class ScoutScreen implements Screen {
 		nameTable.align(Align.center|Align.top);
 		//nameTable.setDebug(true);
 		
+		//Widget to scroll through Player Names
 		scrollPane.setSize(stage.getWidth()/4, stage.getHeight());
 		scrollPane.setScrollingDisabled(true, false);
 		scrollPane.setPosition(0, 0);
