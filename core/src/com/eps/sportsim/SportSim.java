@@ -18,7 +18,7 @@ public class SportSim extends Game {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		this.setScreen(new ScoutScreen());
+		this.setScreen(new RosterScreen());
 
 	}
 
