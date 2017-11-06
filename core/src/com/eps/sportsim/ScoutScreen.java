@@ -2,6 +2,7 @@ package com.eps.sportsim;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
@@ -20,7 +21,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class ScoutScreen implements Screen {
 	
-	ArrayList<Athlete> FreeAgents = new ArrayList<Athlete>();;
+	ArrayList<Athlete> FreeAgents = new ArrayList<Athlete>();
 	Table nameTable, statTable, rootTable;
 	ScrollPane scrollPane;
 	Stage stage;
@@ -34,6 +35,7 @@ public class ScoutScreen implements Screen {
 	Label scoutResource, nameLabel;
 	static int currentAgent;
 	TextButton draftButton;
+	TextButton roosterButton;
 	
 	public ScoutScreen(){
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
@@ -105,9 +107,13 @@ public class ScoutScreen implements Screen {
 			e.printStackTrace();
 		}
 
+		roosterButton = new TextButton("My Rooster", skin);
+		roosterButton.addListener(new RoosterListener());
 		draftButton = new TextButton("Draft Now", skin);
 		draftButton.addListener(new DraftListener());
+
 		statTable.add(draftButton);
+		statTable.add(roosterButton);
 		
 		stage.addActor(statTable);
 		stage.addActor(scrollPane);
@@ -244,4 +250,20 @@ public class ScoutScreen implements Screen {
 		}
 		
 	}
+
+	private class RoosterListener extends ClickListener{
+		public RoosterListener(){
+			System.out.println("allen!!");
+		}
+		@Override
+		public void clicked(InputEvent event, float x, float y) {
+			// TODO Auto-generated method stub
+			super.clicked(event, x, y);
+			System.out.println("clicked rooster!!");
+			//game.setScreen(new RosterScreen(game));
+
+
+		}
+	}
+
 }
