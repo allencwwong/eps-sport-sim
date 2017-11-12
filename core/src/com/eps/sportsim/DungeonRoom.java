@@ -1,12 +1,14 @@
 package com.eps.sportsim;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
@@ -18,14 +20,14 @@ public class DungeonRoom extends Button{
 	Texture roomTexture, attributeTexture;
 	Stack stack;
 	Table attributeContainer;
-	HashMap<String, DungeonRoom> connections;
+	HashMap<Integer, DungeonRoom> connections;
+	int parentDirection;
 	
-	private int currentConnections = 0;
 	
 	public DungeonRoom() {
 		super(new ButtonStyle());
-		
-		this.setSize(200, 200);
+		parentDirection = 5;
+		this.setSize(100, 100);
 		stack = new Stack();
 		roomTexture = new Texture("room.jpg");
 		roomImg = new Image(roomTexture);
@@ -44,25 +46,77 @@ public class DungeonRoom extends Button{
 		stack.add(attributeContainer);
 		this.add(stack);
 		
-		connections = new HashMap<String, DungeonRoom>(4);
-		//this.add(attributeImg);
-		// TODO Auto-generated constructor stub
+		connections = new HashMap<Integer, DungeonRoom>(4);
+
 	}
 
+	public boolean hasChildren(){
+		return !connections.isEmpty();
+	}
 
-
-	public void addConnection(DungeonRoom room){
+	public void addChildren(DungeonRoom room, ArrayList<Vector2> positions){
 		Random random = new Random();
-		int direction;
-		if(currentConnections <= 4){
+		int direction = random.nextInt(4);
+		boolean overlapping = true;
+		int failsafe = 0;
+		
+		//Find a valid direction, checks for parent, current rooms already connected and overlapping with other rooms
+		while(connections.containsKey(direction) || direction == parentDirection || overlapping){
 			direction = random.nextInt(4);
-			while(connections.containsKey(Integer.toString(direction))){
-				direction = random.nextInt(4);
+			switch(direction){
+				case 0:
+					overlapping = positions.contains(new Vector2(this.getX() + 0, this.getY() + 120));
+					break;
+				case 1:
+					overlapping = positions.contains(new Vector2(this.getX() + 120, this.getY() + 0));
+					break;
+				case 2:
+					overlapping = positions.contains(new Vector2(this.getX() + 0, this.getY() - 120));
+					break;
+				case 3:
+					overlapping = positions.contains(new Vector2(this.getX() - 120, this.getY() + 0));
+					break;
+				default:
+					break;
 			}
-			connections.put(Integer.toString(direction), room);
-			currentConnections++;
-		}else{
-			System.out.println("ERRORPRONE: ADDING TOO MANY ROOMS ERROR");
+
+			//If we can't find a valid direction after 30 loops, abort mission
+			if(failsafe < 30){
+				failsafe++;
+			}else{
+				return;
+			}
+			
+		}
+		switch(direction){
+			case 0:
+				connections.put(direction, room);
+				//if(positions.)
+				room.setPosition(this.getX() + 0, this.getY() + 120);
+				positions.add(new Vector2(this.getX() + 0, this.getY() + 120));
+				room.parentDirection = 2;
+				break;
+			case 1:
+				connections.put(direction, room);
+				room.setPosition(this.getX() + 120, this.getY() + 0);
+				positions.add(new Vector2(this.getX() + 120, this.getY() + 0));
+				room.parentDirection = 3;
+				break;
+			case 2:
+				connections.put(direction, room);
+				room.setPosition(this.getX() + 0, this.getY() - 120);
+				positions.add(new Vector2(this.getX() + 0, this.getY() - 120));
+				room.parentDirection = 0;
+				break;
+			case 3:
+				connections.put(direction, room);
+				room.setPosition(this.getX() - 120, this.getY() + 0);
+				positions.add(new Vector2(this.getX() - 120, this.getY() + 0));
+				room.parentDirection = 1;
+				break;
+			default:
+				System.out.println("ERRORPRONE: ADDING TOO MANY DIRECTIONS");
+				break;
 		}
 	}
 	

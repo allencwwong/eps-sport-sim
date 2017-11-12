@@ -2,6 +2,7 @@ package com.eps.sportsim;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
@@ -35,15 +36,16 @@ public class DungeonScreen implements Screen, InputProcessor{
 	private int touchX, touchY;
 	
 	public DungeonScreen(){
+		int dungeonSize = 10;
 		batch = new SpriteBatch();
 		skin = new Skin(Gdx.files.internal("uiskin.json"));
 		DungeonLayout = new ArrayList<DungeonRoom>();
 
 		camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		buildMap(5);
+		buildMap(dungeonSize);
 
 		stage = new Stage();
-		for(int i = 0; i < 5; i++){
+		for(int i = 0; i < dungeonSize; i++){
 			stage.addActor(DungeonLayout.get(i));
 		}
 		viewport = new FitViewport(0, 0, camera);
@@ -54,35 +56,46 @@ public class DungeonScreen implements Screen, InputProcessor{
 	}
 	
 	private void buildMap(int size){
-		ArrayList<DungeonRoom> noConnection = new ArrayList<DungeonRoom>();
 		
-		Random rand = null;
-		int random = rand.nextInt(4) + 1;
+		ArrayList<Vector2> positionTracker = new ArrayList<Vector2>();
+		Random rand = new Random();
+		int random;
+		int current = 0;
 		
-		for(int i = 0; i < size; i++){
-			noConnection.add(new DungeonRoom());
-		}
 		//Add Initial room to layout and remove it from connection list
-		DungeonLayout.add(noConnection.get(0));
-		noConnection.remove(0);
+		DungeonLayout.add(new DungeonRoom());
 		size--;
+		//Set Position of first Room
+		DungeonLayout.get(0).setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+		positionTracker.add(new Vector2(DungeonLayout.get(0).getX(), DungeonLayout.get(0).getY()));
 		
 		while(size > 0){
-			int currentRoom = 0;
-			//Make sure we don't add more rooms than we are suppose to
+			//RNG amount of connections for current room (1-3)
+			random = rand.nextInt(3) + 1;
+			
+			//Make sure we don't exceed dungeon size
 			while(random > size){
-				random = rand.nextInt(4) + 1;
+				random = rand.nextInt(3) + 1;
 			}
 			
-			//Add connections to current room via random directions
+			//Add children to current room
 			for(int i = 0; i < random; i++){
-					DungeonLayout.add(noConnection.get(0));
-					DungeonLayout.get(currentRoom).addConnection(noConnection.get(0));
-					noConnection.remove(0);
-				}
+				DungeonLayout.get(current).addChildren(new DungeonRoom(), positionTracker);
 			}
+			
+			//Add Children to layout
+			for(Map.Entry<Integer, DungeonRoom> entry: DungeonLayout.get(current).connections.entrySet()){
+				DungeonLayout.add(entry.getValue());
+				size--;
+			}
+			current++;
 		}
+
 		
+		for(int i = 0; i < DungeonLayout.size(); i++){
+			System.out.println("Room " + i + ": " + DungeonLayout.get(i).connections.keySet());			
+		}
+
 		
 	}
 	
