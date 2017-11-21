@@ -16,8 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 public class DungeonRoom extends Button{
 
-	Image roomImg, attributeImg;
-	Texture roomTexture, attributeTexture;
+	Image roomImg, attributeImg, accessImg;
+	Texture roomTexture, attributeTexture, accessTexture;
 	Stack stack;
 	Table attributeContainer;
 	HashMap<Integer, DungeonRoom> connections;
@@ -29,21 +29,28 @@ public class DungeonRoom extends Button{
 		parentDirection = 5;
 		this.setSize(100, 100);
 		stack = new Stack();
+		
 		roomTexture = new Texture("room.jpg");
 		roomImg = new Image(roomTexture);
 		roomImg.setSize(this.getWidth(), this.getHeight());
 		
 		attributeTexture = new Texture("question.png");
 		attributeImg = new Image(attributeTexture);
+		attributeImg.setSize(this.getWidth()/4, this.getHeight()/4);
+
+		accessTexture = new Texture("grey_box.jpg");
+		accessImg = new Image(accessTexture);
+		accessImg.setSize(this.getWidth(), this.getHeight());
+		accessImg.setColor(0, 0, 0, 0.5f);
 		
 		attributeContainer = new Table();
 		attributeContainer.setSize(this.getWidth(), this.getHeight());
-		attributeImg.setSize(this.getWidth()/4, this.getHeight()/4);
 
 		attributeContainer.add(attributeImg).center().pad(this.getHeight()/3);
 		
 		stack.add(roomImg);
 		stack.add(attributeContainer);
+		stack.add(accessImg);
 		this.add(stack);
 		
 		connections = new HashMap<Integer, DungeonRoom>(4);
@@ -54,6 +61,18 @@ public class DungeonRoom extends Button{
 		return !connections.isEmpty();
 	}
 
+	public void inRoom(){
+		attributeImg.setColor(0, 0, 0, 0);
+	}
+	
+	public void setRoomAccess(boolean accessible){
+		if(accessible){
+			accessImg.setColor(0, 0, 0, 0);
+		}else{
+			accessImg.setColor(0, 0, 0, 0.3f);
+		}
+	}
+	
 	public void addChildren(DungeonRoom room, ArrayList<Vector2> positions){
 		Random random = new Random();
 		int direction = random.nextInt(4);

@@ -96,6 +96,14 @@ public class DungeonScreen implements Screen, InputProcessor{
 			System.out.println("Room " + i + ": " + DungeonLayout.get(i).connections.keySet());			
 		}
 
+		DungeonLayout.get(0).inRoom();
+		
+		DungeonLayout.get(0).setRoomAccess(true);
+		if(DungeonLayout.get(0).hasChildren()){
+			for(Map.Entry<Integer, DungeonRoom> entry: DungeonLayout.get(0).connections.entrySet()){
+				entry.getValue().setRoomAccess(true);
+			}
+		}
 		
 	}
 	
